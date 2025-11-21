@@ -46,6 +46,9 @@ namespace CMCS_ST10337861.Controllers
 
             model.LecturerId = user.Id;
 
+            // Clear any existing ModelState entry for LecturerId so validation uses this value
+            ModelState.Remove(nameof(model.LecturerId));
+
             if (!TryValidateModel(model))
             {
                 return View(model);
