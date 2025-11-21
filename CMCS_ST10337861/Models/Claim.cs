@@ -34,7 +34,9 @@ namespace CMCS_ST10337861.Models
         public DateTime SubmittedDate { get; set; }
 
         // Navigation properties
-        public ApplicationUser Lecturer{ get; set; } = null!;
+        // Lecturer navigation is optional for model binding (we set LecturerId explicitly),
+        // so make this nullable to avoid required-field validation on the navigation property.
+        public ApplicationUser? Lecturer { get; set; }
         public ICollection<SupportingDocument> SupportingDocuments { get; set; } = new List<SupportingDocument>();
     }
 }

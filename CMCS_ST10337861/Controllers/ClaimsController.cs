@@ -34,37 +34,51 @@ namespace CMCS_ST10337861.Controllers
         [Authorize(Roles = "Lecturer")]
         public async Task<IActionResult> Submit(Claim model, IFormFile[] files)
         {
-            if (!ModelState.IsValid)
+            ViewBag.Months = new SelectList(new[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" });
+
+            // Ensure we have the logged-in user and set LecturerId before validation
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
-                ViewBag.Months = new SelectList(new[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" });
+                ModelState.AddModelError(string.Empty, "User not found. Please log in again.");
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            model.LecturerId = user.Id;                 // This matches your Claim model
+            model.LecturerId = user.Id;
+
+            if (!TryValidateModel(model))
+            {
+                return View(model);
+            }
+
             model.Status = "Pending";
             model.SubmittedDate = DateTime.Now;
             model.TotalAmount = model.HoursWorked * model.HourlyRate;
 
+            // Save claim first
             _context.Claims.Add(model);
             await _context.SaveChangesAsync();
 
-            // Upload files
-            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+            // Upload files and attach supporting documents
+            var uploadPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads");
             Directory.CreateDirectory(uploadPath);
 
             if (files != null && files.Any(f => f?.Length > 0))
             {
-                foreach (var file in files.Where(f => f != null))
+                foreach (var file in files.Where(f => f != null && f.Length > 0))
                 {
-                    var fileName = Guid.NewGuid() + "_" + Path.GetFileName(file.FileName);
+                    var safeFileName = Path.GetFileName(file.FileName);
+                    var fileName = Guid.NewGuid() + "_" + safeFileName;
                     var fullPath = Path.Combine(uploadPath, fileName);
-                    await file.CopyToAsync(new FileStream(fullPath, FileMode.Create));
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
 
                     _context.SupportingDocuments.Add(new SupportingDocument
                     {
                         ClaimId = model.ClaimId,
-                        FileName = file.FileName,
+                        FileName = safeFileName,
                         FilePath = "/uploads/" + fileName
                     });
                 }
@@ -75,13 +89,20 @@ namespace CMCS_ST10337861.Controllers
             return RedirectToAction("MyClaims");
         }
 
-        // LECTURER: My Claims – THIS WILL NOW SHOW YOUR CLAIM
+        [Authorize(Roles = "Lecturer,ProgrammeCoordinator,AcademicManager")]
+        public async Task<IActionResult> Submitted(int id)
+        {
+            return RedirectToAction("MyClaims");
+        }
+
+        // LECTURER: My Claims
         [Authorize(Roles = "Lecturer")]
         public async Task<IActionResult> MyClaims()
         {
             var userId = _userManager.GetUserId(User);
             var claims = await _context.Claims
-                .Where(c => c.LecturerId == userId)        // Matches your model exactly
+                .Include(c => c.SupportingDocuments)
+                .Where(c => c.LecturerId == userId)
                 .OrderByDescending(c => c.SubmittedDate)
                 .ToListAsync();
 
