@@ -1,0 +1,56 @@
+﻿@model IEnumerable<CMCS_ST10337861.Models.Claim>
+
+@{
+    ViewData["Title"] = "Final Approval";
+}
+
+<div class="container mt-5">
+    <h2 class="text-primary mb-4">Claims Pending Final Approval</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No claims awaiting final approval.</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var claim in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card border-info shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <strong>@claim.Month @claim.Year</strong> - @claim.Lecturer?.FullName
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Hours:</strong> @claim.HoursWorked | <strong>Rate:</strong> R@claim.HourlyRate</p>
+                            <p>
+                                <strong>Total:</strong>
+                                <span class="text-success fw-bold">R@claim.TotalAmount.ToString("F2")</span>
+                            </p>
+                            <p><strong>Verified on:</strong> @claim.SubmittedDate.ToString("dd MMM yyyy")</p>
+                            <p>
+                                <strong>Documents:</strong>
+                                @if (claim.SupportingDocuments != null && claim.SupportingDocuments.Any())
+                                {
+                                    foreach (var doc in claim.SupportingDocuments)
+                                    {
+                                        <a href="@doc.FilePath" target="_blank" class="btn btn-sm btn-outline-secondary me-1">
+                                            View File
+                                        </a>
+                                    }
+                                }
+                            </p>
+                        </div>
+                        <div class="card-footer text-center">
+                            <form asp-action="Approve" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@claim.ClaimId" />
+                                <button type="submit" name="action" value="Approve" class="btn btn-success btn-sm">Final Approve</button>
+                                <button type="submit" name="action" value="Reject" class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,70 @@
+﻿@model IEnumerable<CMCS_ST10337861.Models.Claim>
+
+@{
+    ViewData["Title"] = "My Claims";
+}
+
+<div class="container mt-5">
+    <h2 class="text-primary mb-4">My Submitted Claims</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You have not submitted any claims yet.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Month</th>
+                        <th>Year</th>
+                        <th>Hours</th>
+                        <th>Rate</th>
+                        <th>Total</th>
+                        <th>Submitted Date</th>
+                        <th>Status</th>
+                        <th>Documents</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var claim in Model)
+                    {
+                        <tr>
+                            <td>@claim.Month</td>
+                            <td>@claim.Year</td>
+                            <td>@claim.HoursWorked</td>
+                            <td>R@claim.HourlyRate</td>
+                            <td class="fw-bold text-success">R@claim.TotalAmount.ToString("F2")</td>
+                            <td>@claim.SubmittedDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <span class="badge @(claim.Status == "Approved" ? "bg-success" :
+                                                                                          claim.Status == "Rejected" ? "bg-danger" :
+                                                                                          claim.Status == "Verified" ? "bg-info" : "bg-warning")">
+                            @claim.Status
+                        </span>
+                    </td>
+                    <td>
+                        @if (claim.SupportingDocuments != null && claim.SupportingDocuments.Any())
+                                {
+                                    @foreach (var doc in claim.SupportingDocuments)
+                                    {
+                                        <a href="@doc.FilePath" target="_blank" class="btn btn-sm btn-outline-primary me-1">
+                                            View File
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No files</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <a asp-action="Submit" class="btn btn-primary mt-3">Submit New Claim</a>
+</div>

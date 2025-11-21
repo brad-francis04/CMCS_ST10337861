@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Home - CMCS";
+}
+<div class="text-center mt-5">
+    <h1 class="display-4 text-primary">Contract Monthly Claim System</h1>
+    <h2 class="text-secondary">CMCS_ST10337861</h2>
+    <hr />
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <p class="lead">Please <a asp-area="Identity" asp-page="/Account/Login">login</a> to continue.</p>
+    }
+    else
+    {
+        <div class="alert alert-success">
+            <strong>Welcome, @User.Identity.Name!</strong><br />
+            You are logged in as: <strong>@string.Join(", ", User.Claims.Where(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Select(c => c.Value))</strong>
+        </div>
+        <div class="row mt-4">
+            @if (User.IsInRole("Lecturer"))
+            {
+                <div class="col-md-4"><a asp-controller="Claims" asp-action="Submit" class="btn btn-primary btn-lg w-100">Submit New Claim</a></div>
+                <div class="col-md-4"><a asp-controller="Claims" asp-action="MyClaims" class="btn btn-info btn-lg w-100">My Claims</a></div>
+            }
+            @if (User.IsInRole("ProgrammeCoordinator"))
+            {
+                <div class="col-md-6"><a asp-controller="Claims" asp-action="CoordinatorPending" class="btn btn-warning btn-lg w-100">Verify Claims</a></div>
+            }
+            @if (User.IsInRole("AcademicManager"))
+            {
+                <div class="col-md-6"><a asp-controller="Claims" asp-action="ManagerPending" class="btn btn-success btn-lg w-100">Final Approval</a></div>
+            }
+        </div>
+    }
+</div>

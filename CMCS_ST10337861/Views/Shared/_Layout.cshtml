@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CMCS_ST10337861</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">CMCS_ST10337861</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                        @if (User.IsInRole("Lecturer"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Claims" asp-action="Submit">Submit Claim</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Claims" asp-action="MyClaims">My Claims</a></li>
+                        }
+                        @if (User.IsInRole("ProgrammeCoordinator"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Claims" asp-action="CoordinatorPending">Verify Claims</a></li>
+                        }
+                        @if (User.IsInRole("AcademicManager"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Claims" asp-action="ManagerPending">Final Approval</a></li>
+                        }
+                    </ul>
+
+                    <!-- Simple Login/Logout (NO PARTIAL NEEDED) -->
+                    <ul class="navbar-nav">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white fw-bold"
+                                   href="/Identity/Account/Login">
+                                    Login
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                                            <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white"
+                                   asp-area="Identity"
+                                   asp-page="/Account/Login"
+                                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                                    Login
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-4">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="text-center py-4 mt-5 border-top">
+        &copy; 2025 - CMCS_ST10337861 - Contract Monthly Claim System (PROG6212 POE)
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
