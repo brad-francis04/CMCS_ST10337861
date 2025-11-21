@@ -22,10 +22,10 @@
                             <strong>@claim.Month @claim.Year</strong> - @claim.Lecturer?.FullName
                         </div>
                         <div class="card-body">
-                            <p><strong>Hours:</strong> @claim.HoursWorked | <strong>Rate:</strong> R@claim.HourlyRate</p>
+                            <p><strong>Hours:</strong> @claim.HoursWorked | <strong>Rate:</strong> R @claim.HourlyRate</p>
                             <p>
                                 <strong>Total:</strong>
-                                <span class="text-success fw-bold">R@claim.TotalAmount.ToString("F2")</span>
+                                <span class="text-success fw-bold">R @claim.TotalAmount.ToString("F2")</span>
                             </p>
                             <p><strong>Verified on:</strong> @claim.SubmittedDate.ToString("dd MMM yyyy")</p>
                             <p>

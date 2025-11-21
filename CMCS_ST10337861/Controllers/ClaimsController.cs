@@ -117,7 +117,8 @@ namespace CMCS_ST10337861.Controllers
         public async Task<IActionResult> CoordinatorPending()
         {
             var claims = await _context.Claims
-                .Include(c => c.Lecturer)                  // This fixes the view errors
+                .Include(c => c.Lecturer)
+                .Include(c => c.SupportingDocuments)
                 .Where(c => c.Status == "Pending")
                 .OrderByDescending(c => c.SubmittedDate)
                 .ToListAsync();
@@ -143,6 +144,7 @@ namespace CMCS_ST10337861.Controllers
         {
             var claims = await _context.Claims
                 .Include(c => c.Lecturer)                  // This fixes the view errors
+                .Include(c => c.SupportingDocuments)
                 .Where(c => c.Status == "Verified")
                 .OrderByDescending(c => c.SubmittedDate)
                 .ToListAsync();

@@ -23,10 +23,10 @@
                         </div>
                         <div class="card-body">
                             <p><strong>Hours Worked:</strong> @claim.HoursWorked</p>
-                            <p><strong>Hourly Rate:</strong> R@claim.HourlyRate</p>
+                            <p><strong>Hourly Rate:</strong> R @claim.HourlyRate</p>
                             <p>
                                 <strong>Total Amount:</strong>
-                                <span class="text-success fw-bold">R@claim.TotalAmount.ToString("F2")</span>
+                                <span class="text-success fw-bold">R @claim.TotalAmount.ToString("F2")</span>
                             </p>
                             <p><strong>Submitted:</strong> @claim.SubmittedDate.ToString("dd MMM yyyy HH:mm")</p>
                             @if (!string.IsNullOrEmpty(claim.Notes))
